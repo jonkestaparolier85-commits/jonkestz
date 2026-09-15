@@ -3,527 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gestionnaire de Domaines & Sécurité Faciale</title>
+    <title>Questionnaire de Satisfaction - KATEX STORE</title>
     <style>
-        :root {
-            --primary: #4f46e5;
-            --primary-hover: #4338ca;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f8fafc;
-            --text-muted: #94a3b8;
-            --danger: #ef4444;
-            --success: #22c55e;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
+        /* Style général */
         body {
-            background-color: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-
-        /* Écrans de l'application */
-        .screen {
-            display: none;
-            width: 100%;
-            max-width: 900px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #ffe6d7;
+            color: #011f2a;
+            margin: 0;
             padding: 20px;
-            min-height: 100vh;
         }
 
-        .screen.active {
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Écran d'authentification */
-        #auth-screen {
-            justify-content: center;
-            align-items: center;
+        /* En-tête principal en Vert dominant */
+        header {
+            background-color: #014e48;
+            color: #ffffff;
             text-align: center;
-        }
-
-        .auth-card {
-            background: var(--card-bg);
-            padding: 30px;
-            border-radius: 16px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        video, canvas {
-            width: 100%;
-            max-width: 320px;
-            height: 240px;
+            padding: 25px 20px;
             border-radius: 12px;
-            background: #000;
-            object-fit: cover;
-            margin: 15px 0;
-            border: 2px solid var(--primary);
+            margin-bottom: 25px;
         }
 
-        canvas {
-            display: none;
-        }
-
-        /* Boutons */
-        button {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px 20px;
+        /* Style du Logo */
+        .logo {
+            max-width: 140px;
+            height: auto;
             border-radius: 8px;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: background 0.2s;
-            width: 100%;
-            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        /* Container du formulaire */
+        .form-container {
+            max-width: 650px;
+            margin: 0 auto;
+            background-color: #ffffff;
+            padding: 25px;
+            border-radius: 12px;
+            border-top: 6px solid #014e48;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+
+        /* Style des questions */
+        .question-group {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #ffe6d7;
+        }
+
+        label {
+            display: block;
             font-weight: bold;
+            color: #014e48;
+            margin-bottom: 8px;
+        }
+
+        /* Style des champs de saisie */
+        select, input[type="text"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #014e48;
+            border-radius: 6px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        textarea {
+            resize: vertical;
+            height: 80px;
+        }
+
+        /* Image secondaire de présentation */
+        .section-image {
+            width: 100%;
+            max-height: 180px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-top: 10px;
+        }
+
+        /* Bouton d'envoi en Orange */
+        button {
+            width: 100%;
+            background-color: #fb874c;
+            color: #ffffff;
+            border: none;
+            padding: 14px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 10px;
         }
 
         button:hover {
-            background-color: var(--primary-hover);
+            background-color: #014e48;
         }
-
-        button.danger {
-            background-color: var(--danger);
-        }
-        button.danger:hover {
-            background-color: #dc2626;
-        }
-
-        /* Dashboard */
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            border-bottom: 1px solid #334155;
-            padding-bottom: 15px;
-        }
-
-        .search-add-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #1e293b;
-            color: white;
-            font-size: 1rem;
-        }
-
-        input:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        /* Liste des domaines */
-        .domains-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-            gap: 15px;
-            overflow-y: auto;
-            max-height: 60vh;
-            padding-right: 5px;
-        }
-
-        .domain-card {
-            background: var(--card-bg);
-            padding: 18px;
-            border-radius: 12px;
-            border: 1px solid #334155;
-            cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .domain-card:hover {
-            transform: translateY(-3px);
-            border-color: var(--primary);
-        }
-
-        .domain-card h3 {
-            font-size: 1.1rem;
-            margin-bottom: 8px;
-            color: #f1f5f9;
-        }
-
-        .domain-card p {
-            font-size: 0.85rem;
-            color: var(--text-muted);
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-        }
-
-        /* Modal / Vue détail */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-content {
-            background: var(--card-bg);
-            padding: 25px;
-            border-radius: 16px;
-            width: 90%;
-            max-width: 500px;
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-
-        .msg {
-            margin-top: 10px;
-            font-size: 0.9rem;
-            font-weight: bold;
-        }
-        .error { color: var(--danger); }
-        .success { color: var(--success); }
     </style>
 </head>
 <body>
 
-    <!-- ÉCRAN 1 : AUTHENTIFICATION FACIALE -->
-    <div id="auth-screen" class="screen active">
-        <div class="auth-card">
-            <h2>Sécurité de l'Application</h2>
-            <p id="auth-instruction" style="color:var(--text-muted); margin: 10px 0; font-size: 0.9rem;">
-                Chargement de la caméra...
-            </p>
-            
-            <video id="webcam" autoplay playsinline></video>
-            <canvas id="snapshot"></canvas>
-
-            <button id="auth-btn" onclick="handleAuthAction()" disabled>Vérification...</button>
-            <div id="auth-msg" class="msg"></div>
-        </div>
-    </div>
-
-    <!-- ÉCRAN 2 : TABLEAU DE BORD DES DOMAINES -->
-    <div id="dashboard-screen" class="screen">
+    <div class="form-container">
+        <!-- En-tête avec Logo -->
         <header>
-            <h1>Encyclopédie & Notes des Domaines</h1>
-            <button class="danger" style="width: auto; padding: 8px 15px;" onclick="logout()">Verrouiller</button>
+            <img src="XCVDV.jpg" alt="Logo KATEX STORE" class="logo">
+            <h1>KATEX STORE</h1>
+            <p>Votre avis compte ! Aidez-nous à améliorer nos services.</p>
         </header>
 
-        <div class="search-add-bar">
-            <input type="text" id="search-input" placeholder="Rechercher un domaine..." oninput="filterDomains()">
-            <button onclick="openAddModal()" style="width: auto; white-space: nowrap;">+ Nouveau Domaine</button>
-        </div>
+        <form action="#" method="POST">
 
-        <div class="domains-grid" id="domains-container">
-            <!-- Rempli dynamiquement en JS -->
-        </div>
-    </div>
-
-    <!-- MODAL : AJOUTER UN DOMAINE -->
-    <div id="add-modal" class="modal">
-        <div class="modal-content">
-            <h3>Ajouter un nouveau domaine</h3>
-            <input type="text" id="new-domain-name" placeholder="Nom du domaine (ex: Biotechnologie)...">
-            <textarea id="new-domain-note" placeholder="Première note ou description..." rows="4"></textarea>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="addNewDomain()">Enregistrer</button>
-                <button class="danger" onclick="closeAddModal()">Annuler</button>
+            <!-- Question 1 -->
+            <div class="question-group">
+                <label for="q1">1. Comment évaluez-vous la qualité globale de nos produits / services ?</label>
+                <select id="q1" name="q1" required>
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="excellent">Très Satisfait</option>
+                    <option value="bon">Satisfait</option>
+                    <option value="moyen">Moyen</option>
+                    <option value="mauvais">Insatisfait</option>
+                </select>
             </div>
-        </div>
-    </div>
 
-    <!-- MODAL : DETAILS ET GESTION DES NOTES D'UN DOMAINE -->
-    <div id="detail-modal" class="modal">
-        <div class="modal-content">
-            <h3 id="detail-title">Domaine</h3>
-            <p style="font-size:0.85rem; color:var(--text-muted);">Vos notes personnelles pour ce domaine :</p>
-            <textarea id="detail-notes" rows="6" placeholder="Écrivez vos notes ici..."></textarea>
-            <div style="display: flex; gap: 10px;">
-                <button onclick="saveDomainNotes()">Mettre à jour les notes</button>
-                <button class="danger" onclick="closeDetailModal()">Fermer</button>
+            <!-- Question 2 -->
+            <div class="question-group">
+                <label for="q2">2. Comment trouvez-vous l'accueil et la politesse de notre équipe ?</label>
+                <select id="q2" name="q2">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="excellent">Excellent</option>
+                    <option value="bon">Bon</option>
+                    <option value="moyen">Passable</option>
+                    <option value="mauvais">À améliorer</option>
+                </select>
             </div>
-        </div>
+
+            <!-- Question 3 -->
+            <div class="question-group">
+                <label for="q3">3. Nos agents ont-ils bien répondu à vos besoins ?</label>
+                <select id="q3" name="q3">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="oui-tout-a-fait">Oui, tout à fait</option>
+                    <option value="partiellement">Partiellement</option>
+                    <option value="non">Non, pas du tout</option>
+                </select>
+            </div>
+
+            <!-- Question 4 -->
+            <div class="question-group">
+                <label for="q4">4. Que pensez-vous du temps d'attente ou du délai de livraison ?</label>
+                <select id="q4" name="q4">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="tres-rapide">Très rapide</option>
+                    <option value="acceptable">Acceptable</option>
+                    <option value="trop-long">Trop long</option>
+                </select>
+            </div>
+
+            <!-- Question 5 -->
+            <div class="question-group">
+                <label for="q5">5. Comment trouvez-vous le rapport qualité / prix de KATEX STORE ?</label>
+                <select id="q5" name="q5">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="tres-bon">Très raisonnable</option>
+                    <option value="correct">Correct</option>
+                    <option value="eleve">Trop cher</option>
+                </select>
+            </div>
+
+            <!-- Question 6 -->
+            <div class="question-group">
+                <label for="q6">6. Le processus de commande / d'achat était-il facile ?</label>
+                <select id="q6" name="q6">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="tres-facile">Très facile</option>
+                    <option value="moyen">Moyennement facile</option>
+                    <option value="difficile">Compliqué</option>
+                </select>
+            </div>
+
+            <!-- Question 7 -->
+            <div class="question-group">
+                <label for="q7">7. Recommanderiez-vous KATEX STORE à vos amis ou proches ?</label>
+                <select id="q7" name="q7">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="certainement">Oui, certainement</option>
+                    <option value="peut-etre">Peut-être</option>
+                    <option value="non">Non</option>
+                </select>
+            </div>
+
+            <!-- Question 8 -->
+            <div class="question-group">
+                <label for="q8">8. À quelle fréquence utilisez-vous nos services ?</label>
+                <select id="q8" name="q8">
+                    <option value="">-- Sélectionnez une réponse --</option>
+                    <option value="regulier">Régulièrement (plusieurs fois par mois)</option>
+                    <option value="occasionnel">Occasionnellement</option>
+                    <option value="premiere-fois">C'était ma première fois</option>
+                </select>
+            </div>
+
+            <!-- Question 9 -->
+            <div class="question-group">
+                <label for="q9">9. Quel est le point fort principal de KATEX STORE d'après vous ?</label>
+                <input type="text" id="q9" name="q9" placeholder="Ex: La qualité des produits, l'accueil...">
+            </div>
+
+            <!-- Question 10 avec Deuxième Image -->
+            <div class="question-group">
+                <label for="q10">10. Avez-vous des suggestions ou des remarques pour nous aider à nous améliorer ?</label>
+                <textarea id="q10" name="q10" placeholder="Écrivez votre avis ici..."></textarea>
+                <img src="ZZezqez.jpg" alt="KATEX STORE visuel" class="section-image">
+            </div>
+
+            <!-- Bouton Valider -->
+            <button type="submit">ENVOYER MON AVIS</button>
+
+        </form>
     </div>
 
-    <script>
-        // --- BASE DE DONNÉES INITIALE (Plus de 50 domaines) ---
-        const initialDomains = [
-            { name: "Domotique", notes: "Gestion intelligente de la maison (lumières, volets, thermostats)." },
-            { name: "Orthopédie", notes: "Branche médicale traitant des os, articulations et muscles." },
-            { name: "Cybersécurité", notes: "Protection des systèmes informatiques, réseaux et données contre les cyberattaques." },
-            { name: "Intelligence Artificielle", notes: "Création de machines capables de simuler l'intelligence humaine." },
-            { name: "Astrophysique", notes: "Étude de la physique des corps célestes et de l'univers." },
-            { name: "Biotechnologie", notes: "Utilisation d'organismes vivants pour créer des produits (médicaments, OGM)." },
-            { name: "Nanotechnologie", notes: "Manipulation de la matière à l'échelle moléculaire ou atomique." },
-            { name: "Cryptographie", notes: "Techniques de chiffrement pour sécuriser les communications." },
-            { name: "Aéronautique", notes: "Science et technique de la navigation aérienne." },
-            { name: "Robotique", notes: "Conception, fabrication et programmation de robots." },
-            { name: "Énergies Renouvelables", notes: "Solaire, éolien, hydraulique, géothermie..." },
-            { name: "Neurosciences", notes: "Étude scientifique du système nerveux et du cerveau." },
-            { name: "Génomique", notes: "Étude du génome complet d'un organisme." },
-            { name: "Agroalimentaire", notes: "Industrie transformant les matières premières agricoles en produits alimentaires." },
-            { name: "Urbanisme", notes: "Aménagement et organisation des villes et territoires." },
-            { name: "Architecture", notes: "Art de concevoir et de construire des bâtiments." },
-            { name: "Logistique", notes: "Gestion des flux de marchandises, transport et stockage." },
-            { name: "Marketing Digital", notes: "Stratégies publicitaires et commerciales sur Internet." },
-            { name: "Économie Circulaire", notes: "Modèle économique visant à limiter le gaspillage et recycler." },
-            { name: "Météorologie", notes: "Étude des phénomènes atmosphériques pour prévoir le temps." },
-            { name: "Océanographie", notes: "Étude scientifique des océans et mers." },
-            { name: "Pétrochimie", notes: "Chimie dérivée du pétrole et du gaz naturel." },
-            { name: "Pharmacologie", notes: "Étude des médicaments et de leur action sur l'organisme." },
-            { name: "Pédagogie", notes: "Science de l'éducation et méthodes d'enseignement." },
-            { name: "Psychologie Clinique", notes: "Étude et traitement des troubles psychiques." },
-            { name: "Sociologie", notes: "Étude des faits sociaux et des comportements collectifs." },
-            { name: "Linguistique", notes: "Étude scientifique du langage humain." },
-            { name: "Paléontologie", notes: "Étude des fossiles et de la vie préhistorique." },
-            { name: "Archéologie", notes: "Étude du passé humain par la fouille des vestiges matériels." },
-            { name: "Géopolitique", notes: "Étude des rapports de force géographiques et politiques mondiaux." },
-            { name: "Droit International", notes: "Règles juridiques régissant les relations entre États." },
-            { name: "Fintech", notes: "Innovation financière utilisant les technologies modernes." },
-            { name: "Blockchain", notes: "Technologie de stockage et de transmission d'informations décentralisée." },
-            { name: "Réalité Virtuelle", notes: "Immersion numérique interactive en 3D." },
-            { name: "Réalité Augmentée", notes: "Superposition d'éléments virtuels dans le monde réel." },
-            { name: "Ingénierie Spatiale", notes: "Conception de fusées, satellites et sondes spatiales." },
-            { name: "Virologie", notes: "Étude des virus." },
-            { name: "Immunologie", notes: "Étude du système immunitaire." },
-            { name: "Cardiologie", notes: "Spécialité médicale du cœur et des vaisseaux sanguins." },
-            { name: "Dermatologie", notes: "Spécialité de la peau, des cheveux et des ongles." },
-            { name: "Ophtalmologie", notes: "Médecine et chirurgie des yeux." },
-            { name: "Pédiatrie", notes: "Médecine dédiée aux enfants et nourrissons." },
-            { name: "Agronomie", notes: "Science de l'agriculture et de la gestion des sols." },
-            { name: "Sylviculture", notes: "Gestion durable et exploitation des forêts." },
-            { name: "Hydrologie", notes: "Étude du cycle de l'eau sur Terre." },
-            { name: "Sismologie", notes: "Étude des séismes et ondes sismiques." },
-            { name: "Minéralogie", notes: "Étude des minéraux." },
-            { name: "Zoologie", notes: "Étude des animaux." },
-            { name: "Botanique", notes: "Étude des plantes." },
-            { name: "Mycologie", notes: "Étude des champignons." }
-        ];
-
-        // --- GESTION DES DONNÉES LOCALES (LocalStorage) ---
-        function getStoredDomains() {
-            const data = localStorage.getItem('app_domains');
-            if (!data) {
-                localStorage.setItem('app_domains', JSON.stringify(initialDomains));
-                return initialDomains;
-            }
-            return JSON.parse(data);
-        }
-
-        function saveDomainsToStorage(domains) {
-            localStorage.setItem('app_domains', JSON.stringify(domains));
-        }
-
-        // --- GESTION DE LA WEBCAM ET RECONNAISSANCE FACIALE SIMULÉE ---
-        const video = document.getElementById('webcam');
-        const canvas = document.getElementById('snapshot');
-        const authBtn = document.getElementById('auth-btn');
-        const authInstruction = document.getElementById('auth-instruction');
-        const authMsg = document.getElementById('auth-msg');
-
-        let registeredFaceData = localStorage.getItem('user_face_signature'); // Signature stockée
-
-        async function initCamera() {
-            try {
-                const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-                video.srcObject = stream;
-                authBtn.removeAttribute('disabled');
-                
-                if (!registeredFaceData) {
-                    authInstruction.innerText = "Aucun visage enregistré. Cliquez pour vous INSCRIRE.";
-                    authBtn.innerText = "S'inscrire (Enregistrer mon visage)";
-                } else {
-                    authInstruction.innerText = "Visage reconnu en mémoire. Cliquez pour vous CONNECTER.";
-                    authBtn.innerText = "Se connecter (Reconnaissance faciale)";
-                }
-            } catch (err) {
-                authInstruction.innerText = "Erreur : Impossible d'accéder à la caméra.";
-                authMsg.innerText = "Veuillez autoriser l'accès à la webcam.";
-                authMsg.className = "msg error";
-            }
-        }
-
-        // Fonction mathématique simple pour transformer l'image capturée en signature numérique unique (pixelhash)
-        function captureFaceSignature() {
-            canvas.width = 64;
-            canvas.height = 48;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, 64, 48);
-            const imgData = ctx.getImageData(0, 0, 64, 48).data;
-            
-            // Calculer une signature moyenne des nuances lumineuses du visage
-            let sum = 0;
-            for (let i = 0; i < imgData.length; i += 4) {
-                sum += (imgData[i] + imgData[i+1] + imgData[i+2]) / 3;
-            }
-            return Math.round(sum / (imgData.length / 4));
-        }
-
-        function handleAuthAction() {
-            const currentSignature = captureFaceSignature();
-
-            if (!registeredFaceData) {
-                // INSCRIPTION
-                localStorage.setItem('user_face_signature', currentSignature);
-                registeredFaceData = currentSignature;
-                authMsg.innerText = "Inscription faciale réussie ! Connexion en cours...";
-                authMsg.className = "msg success";
-                setTimeout(grantAccess, 1000);
-            } else {
-                // CONNEXION / RECONNAISSANCE
-                const savedSig = parseInt(registeredFaceData);
-                // Tolérance de variation de luminosité (+ ou - 20)
-                const difference = Math.abs(currentSignature - savedSig);
-                
-                if (difference <= 25) {
-                    authMsg.innerText = "Visage reconnu ! Accès autorisé.";
-                    authMsg.className = "msg success";
-                    setTimeout(grantAccess, 800);
-                } else {
-                    authMsg.innerText = "Accès refusé : Visage non reconnu ou luminosité incorrecte.";
-                    authMsg.className = "msg error";
-                }
-            }
-        }
-
-        function grantAccess() {
-            document.getElementById('auth-screen').classList.remove('active');
-            document.getElementById('dashboard-screen').classList.add('active');
-            renderDomains();
-        }
-
-        function logout() {
-            document.getElementById('dashboard-screen').classList.remove('active');
-            document.getElementById('auth-screen').classList.add('active');
-            authMsg.innerText = "";
-            initCamera();
-        }
-
-        // --- LOGIQUE DU TABLEAU DE BORD (DOMAINS & NOTES) ---
-        let currentSelectedDomainIndex = null;
-
-        function renderDomains(filter = "") {
-            const container = document.getElementById('domains-container');
-            container.innerHTML = "";
-            const domains = getStoredDomains();
-
-            const filtered = domains.filter(d => d.name.toLowerCase().includes(filter.toLowerCase()));
-
-            if (filtered.length === 0) {
-                container.innerHTML = `<p style="color:var(--text-muted); grid-column: 1/-1; text-align:center;">Aucun domaine trouvé.</p>`;
-                return;
-            }
-
-            filtered.forEach((domain, index) => {
-                // Retrouver l'index réel dans le tableau global
-                const realIndex = domains.findIndex(d => d.name === domain.name);
-                
-                const card = document.createElement('div');
-                card.className = 'domain-card';
-                card.onclick = () => openDetailModal(realIndex);
-                
-                card.innerHTML = `
-                    <div>
-                        <h3>📌 ${domain.name}</h3>
-                        <p>${domain.notes || 'Aucune note pour le moment. Cliquez pour ajouter...'}</p>
-                    </div>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        function filterDomains() {
-            const query = document.getElementById('search-input').value;
-            renderDomains(query);
-        }
-
-        // Gestion Modale Ajout
-        function openAddModal() {
-            document.getElementById('new-domain-name').value = "";
-            document.getElementById('new-domain-note').value = "";
-            document.getElementById('add-modal').style.display = 'flex';
-        }
-
-        function closeAddModal() {
-            document.getElementById('add-modal').style.display = 'none';
-        }
-
-        function addNewDomain() {
-            const nameInput = document.getElementById('new-domain-name').value.trim();
-            const noteInput = document.getElementById('new-domain-note').value.trim();
-
-            if (!nameInput) {
-                alert("Veuillez entrer un nom de domaine.");
-                return;
-            }
-
-            let domains = getStoredDomains();
-            // Vérifier si existe déjà
-            if(domains.some(d => d.name.toLowerCase() === nameInput.toLowerCase())) {
-                alert("Ce domaine existe déjà.");
-                return;
-            }
-
-            domains.push({ name: nameInput, notes: noteInput });
-            saveDomainsToStorage(domains);
-            closeAddModal();
-            renderDomains();
-        }
-
-        // Gestion Modale Notes & Détails
-        function openDetailModal(index) {
-            currentSelectedDomainIndex = index;
-            const domains = getStoredDomains();
-            const domain = domains[index];
-
-            document.getElementById('detail-title').innerText = "Domaine : " + domain.name;
-            document.getElementById('detail-notes').value = domain.notes || "";
-            document.getElementById('detail-modal').style.display = 'flex';
-        }
-
-        function closeDetailModal() {
-            document.getElementById('detail-modal').style.display = 'none';
-            currentSelectedDomainIndex = null;
-        }
-
-        function saveDomainNotes() {
-            if (currentSelectedDomainIndex === null) return;
-            const newNotes = document.getElementById('detail-notes').value;
-            
-            let domains = getStoredDomains();
-            domains[currentSelectedDomainIndex].notes = newNotes;
-            saveDomainsToStorage(domains);
-            
-            alert("Notes mises à jour avec succès !");
-            closeDetailModal();
-            renderDomains();
-        }
-
-        // Lancer l'initialisation de la caméra au chargement de la page
-        window.addEventListener('load', initCamera);
-    </script>
 </body>
 </html>
